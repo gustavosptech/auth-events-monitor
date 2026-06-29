@@ -1,11 +1,19 @@
-import { User } from '../models/User'
+import { User } from '../models/User.js'
 
 export const seedUsers = async () => {
   const count = await User.countDocuments()
   if (count > 0) return
 
   await User.insertMany([
-    { email: 'usuario@55pbx.com', password: '123456', role: 'user' },
-    { email: 'admin@55pbx.com', password: '123456', role: 'admin' }
+    {
+      email: process.env.SEED_ADMIN_EMAIL,
+      password: process.env.SEED_ADMIN_PASSWORD,
+      role: 'admin'
+    },
+    {
+      email: process.env.SEED_USER_EMAIL,
+      password: process.env.SEED_USER_PASSWORD,
+      role: 'user'
+    }
   ])
 }
