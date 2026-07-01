@@ -28,7 +28,7 @@ export const login = async (req: Request, res: Response) => {
     return res.json({ token, email: user.email, role: user.role })
 }
 
-export const validate = async (req: Request, res: Response) => {
+export const validate = async (req: AuthRequest, res: Response) => {
     const { token } = req.body
     
     const session = await Session.findOne({ token, active: true })
@@ -39,7 +39,7 @@ export const validate = async (req: Request, res: Response) => {
 
     try {
         jwt.verify(token, process.env.JWT_SECRET as string)
-        authEvents.emit(EVENT_TYPES.SESSION_VALIDATED, { token })
+        authEvents.emit(EVENT_TYPES.SESSION_VALIDATED, { token, email: req.user?.email })
         return res.json({ valid: true })
     } catch {
         return res.status(401).json({ valid: false, message: 'Token inválido' })
@@ -51,7 +51,7 @@ export const revoke = async (req: AuthRequest, res: Response) => {
 
     await Session.findOneAndUpdate({ token }, { active: false })
     
-    authEvents.emit(EVENT_TYPES.SESSION_REVOKED, { token })
+    authEvents.emit(EVENT_TYPES.SESSION_REVOKED, { token, email: req.user?.email })
 
     return res.json({ message: 'Sessão revogada com sucesso'})
 }

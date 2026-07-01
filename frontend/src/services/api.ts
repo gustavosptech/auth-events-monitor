@@ -6,7 +6,10 @@ const api = axios.create({
 
 export const login = (email: string, password: string) => api.post('/auth/login', {email, password})
 
-export const validate = (token: string) => api.post('/auth/validate', { token })
+export const validate = (token: string, inputToken: string) => 
+    api.post('/auth/validate', { token: inputToken }, {
+    headers: { 'Authorization': `Bearer ${token}` }
+})
 
 export const revoke = (token: string) => 
     api.post('/auth/revoke', {}, {
